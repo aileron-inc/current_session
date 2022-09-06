@@ -16,16 +16,24 @@ module CurrentSession
         Time.current
       end
 
-      def session_repository_class=(session_repository_class = nil)
-        @session_repository_class = session_repository_class
+      def session_methods=(session_methods_module)
+        @session_repository_class = Class.new(CurrentSession::Repository) { include session_methods_module }
       end
 
       def session_methods(&block)
-        @session_repository_class = Class.new(CurrentSession::Repository, &block)
+        session_methods = Module.new(&block)
+        const_set(:SessionMethods, session_methods)
+        @session_repository_class = Class.new(CurrentSession::Repository) { include session_methods }
+      end
+
+      def auth_methods=(auth_methods_module)
+        @auth_class = Class.new(CurrentSession::Auth) { include auth_methods_module }
       end
 
       def auth_methods(&block)
-        @auth_class = Class.new(CurrentSession::Auth, &block)
+        auth_methods = Module.new(&block)
+        const_set(:AuthMethods, auth_methods)
+        @auth_class = Class.new(CurrentSession::Auth) { include auth_methods }
       end
     end
   end
