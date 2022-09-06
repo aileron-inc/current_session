@@ -23,21 +23,25 @@ create_tables = Class.new(ActiveRecord::Migration[7.0]) do
   end
 end
 
-RSpec.describe CurrentSession::EnvSession do
+RSpec.describe CurrentSession::SessionMethods::UidSession do
+  around(:context) do |example|
+    create_tables.up
+    example.run
+    create_tables.down
+  end
+
   before do
     stub_const "User", (Class.new(ActiveRecord::Base) do
       self.table_name = "uid_session_users"
     end)
   end
-  let(:user_class) { User }
-  before(:all) { create_tables.up }
-  after(:all) { create_tables.down }
 
+  let(:user_class) { User }
   let(:session_key) { CurrentSession.key(User) }
   let(:example_session_class) do
     Class.new(CurrentSession::Base) do
       self.user_class = User
-      self.session_repository_class = CurrentSession::UidSession
+      self.session_methods = CurrentSession::SessionMethods::UidSession
       auth_methods do
         def find_or_create_by_auth
           user_class.find_or_create_by(uid: auth[:uid]) do |instance|
@@ -58,7 +62,6 @@ RSpec.describe CurrentSession::EnvSession do
       end
     end
   end
-
   let(:uid) { SecureRandom.uuid }
   let(:omniauth_auth) do
     OmniAuth::AuthHash.new(
@@ -73,18 +76,18 @@ RSpec.describe CurrentSession::EnvSession do
 
   describe "#create" do
     let(:request) do
-      double(
-        "HttpRequest",
+      OpenSturct.new(
         env: { "omniauth.auth" => omniauth_auth },
         session: {},
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent"
       )
     end
+
     specify do
       expect { example_session_class.create(request) }.to \
         change { User.pick(:uid) }.to(uid) &
-        change { User.count }.by(+1) &
+        change(User, :count).by(+1) &
         change { request.session[session_key].present? }.from(false).to(true) &
         change { request.session[session_key] == uid }.from(false).to(true)
     end
@@ -93,13 +96,13 @@ RSpec.describe CurrentSession::EnvSession do
   describe "#update" do
     let!(:current_user) { user_class.create(uid: "test", name: "test") }
     let(:request) do
-      double(
-        "HttpRequest",
+      OpenSturct.new(
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent",
         session: { session_key => "test" }
       )
     end
+
     specify do
       expect(example_session_class.update(request).current_user).to eq(current_user)
     end
@@ -109,13 +112,13 @@ RSpec.describe CurrentSession::EnvSession do
     let(:uid) { "destory-uid-test" }
     let(:current_user) { user_class.create(uid: uid, name: "test") }
     let!(:request) do
-      double(
-        "HttpRequest",
+      OpenSturct.new(
         session: { session_key => uid },
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent"
       )
     end
+
     specify do
       expect { example_session_class.destroy(request) }.to change { request.session[session_key] }.from(uid).to(nil)
       expect(example_session_class.update(request).current_user).to be_nil

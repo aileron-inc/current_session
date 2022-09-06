@@ -2,12 +2,13 @@
 
 require "spec_helper"
 
-RSpec.describe CurrentSession::ActiveRecordSession do
+RSpec.describe CurrentSession::RaiseNotImplementedError do
   before do
     stub_const "User", Class.new(ActiveRecord::Base)
   end
+
   let(:user_class) { User }
-  let(:not_implemented_session_repository_class) do
+  let(:not_implemented_session_methods) do
     {
       class: Class.new(CurrentSession::Base) do
                self.user_class = user_class
@@ -53,13 +54,13 @@ RSpec.describe CurrentSession::ActiveRecordSession do
       class:
     Class.new(CurrentSession::Base) do
       self.user_class = user_class
-      self.session_repository_class = CurrentSession::ActiveRecordSession
+      self.session_methods = CurrentSession::ActiveRecordSession
     end,
 
       find_or_create_by_auth:
     Class.new(CurrentSession::Base) do
       self.user_class = user_class
-      self.session_repository_class = CurrentSession::ActiveRecordSession
+      self.session_methods = CurrentSession::ActiveRecordSession
       auth_methods do
       end
     end,
@@ -67,7 +68,7 @@ RSpec.describe CurrentSession::ActiveRecordSession do
       update:
     Class.new(CurrentSession::Base) do
       self.user_class = user_class
-      self.session_repository_class = CurrentSession::ActiveRecordSession
+      self.session_methods = CurrentSession::ActiveRecordSession
       auth_methods do
         def find_or_create_by_auth
         end
@@ -85,7 +86,7 @@ RSpec.describe CurrentSession::ActiveRecordSession do
   }.each do |name, expected|
     describe "CurrentSession::Repository##{name}" do
       specify do
-        expect { not_implemented_session_repository_class[name].raise_not_implemented_error }.to raise_error do |error|
+        expect { not_implemented_session_methods[name].raise_not_implemented_error }.to raise_error do |error|
           expect(error).to be_a(NotImplementedError)
           expect(error.message).to match(expected)
         end
