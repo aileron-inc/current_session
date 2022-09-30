@@ -54,13 +54,13 @@ RSpec.describe CurrentSession::RaiseNotImplementedError do
       class:
     Class.new(CurrentSession::Base) do
       self.user_class = user_class
-      self.session_methods = CurrentSession::ActiveRecordSession
+      self.session_methods = CurrentSession::SessionMethods::ActiveRecordSession
     end,
 
       find_or_create_by_auth:
     Class.new(CurrentSession::Base) do
       self.user_class = user_class
-      self.session_methods = CurrentSession::ActiveRecordSession
+      self.session_methods = CurrentSession::SessionMethods::ActiveRecordSession
       auth_methods do
       end
     end,
@@ -68,7 +68,7 @@ RSpec.describe CurrentSession::RaiseNotImplementedError do
       update:
     Class.new(CurrentSession::Base) do
       self.user_class = user_class
-      self.session_methods = CurrentSession::ActiveRecordSession
+      self.session_methods = CurrentSession::SessionMethods::ActiveRecordSession
       auth_methods do
         def find_or_create_by_auth
         end

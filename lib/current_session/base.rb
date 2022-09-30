@@ -21,9 +21,12 @@ module CurrentSession
       end
 
       def session_methods(&block)
-        session_methods = Module.new(&block)
-        const_set(:SessionMethods, session_methods)
-        @session_repository_class = Class.new(CurrentSession::Repository) { include session_methods }
+        if block
+          session_methods = Module.new(&block)
+          @session_repository_class = Class.new(CurrentSession::Repository) { include session_methods }
+        else
+          @session_repository_class
+        end
       end
 
       def auth_methods=(auth_methods_module)
@@ -31,9 +34,12 @@ module CurrentSession
       end
 
       def auth_methods(&block)
-        auth_methods = Module.new(&block)
-        const_set(:AuthMethods, auth_methods)
-        @auth_class = Class.new(CurrentSession::Auth) { include auth_methods }
+        if block
+          auth_methods = Module.new(&block)
+          @auth_class = Class.new(CurrentSession::Auth) { include auth_methods }
+        else
+          @auth_class
+        end
       end
     end
   end

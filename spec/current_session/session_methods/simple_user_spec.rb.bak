@@ -39,7 +39,7 @@ RSpec.describe "CurrentSession::SessionMethods::SimpleUser" do
   end
 
   let(:user_class) { User }
-  let(:session_key) { CurrentSession.key(User) }
+  let(:session_key) { described_class.key(User) }
 
   let(:example_session_class) do
     Class.new(CurrentSession::Base) do
@@ -103,7 +103,7 @@ RSpec.describe "CurrentSession::SessionMethods::SimpleUser" do
 
   describe "#create" do
     let(:request) do
-      OpenStruct.new(
+      OpenSturct.new(
         env: { "omniauth.auth" => omniauth_auth },
         session: {},
         remote_ip: "127.0.0.1",
@@ -123,7 +123,7 @@ RSpec.describe "CurrentSession::SessionMethods::SimpleUser" do
     let(:current_session_token) { "testtest" }
     let!(:current_user) { user_class.create(uid: uid, name: "test", session_token: current_session_token) }
     let!(:request) do
-      OpenStruct.new(
+      OpenSturct.new(
         session: { session_key => current_session_token },
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent"
@@ -140,7 +140,7 @@ RSpec.describe "CurrentSession::SessionMethods::SimpleUser" do
     let(:current_session_token) { "destroy-test" }
     let!(:current_user) { user_class.create(uid: uid, name: "test", session_token: current_session_token) }
     let!(:request) do
-      OpenStruct.new(
+      OpenSturct.new(
         session: { session_key => current_session_token },
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent"

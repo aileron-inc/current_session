@@ -96,7 +96,7 @@ RSpec.describe CurrentSession::SessionMethods::ActiveRecordSession do
 
   describe "#create" do
     let(:request) do
-      OpenSturct.new(
+      OpenStruct.new(
         env: { "omniauth.auth" => omniauth_auth },
         session: {},
         remote_ip: "127.0.0.1",
@@ -116,7 +116,7 @@ RSpec.describe CurrentSession::SessionMethods::ActiveRecordSession do
     let(:current_session_token) { session_token_class.create(user_id: current_user.id).value }
     let!(:current_user) { user_class.create(uid: uid, name: "test") }
     let!(:request) do
-      OpenSturct.new(
+      OpenStruct.new(
         session: { session_key => current_session_token },
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent"
@@ -132,7 +132,7 @@ RSpec.describe CurrentSession::SessionMethods::ActiveRecordSession do
   describe "#destroy" do
     let(:current_session_token) { session_token_class.create(user: user_class.create(uid: uid, name: "test")).value }
     let!(:request) do
-      OpenSturct.new(
+      OpenStruct.new(
         session: { session_key => current_session_token },
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent"
