@@ -5,11 +5,12 @@ module CurrentSession
   # Base class for providing auth methods
   #
   class Auth
-    def initialize(request, user_class)
+    class_attribute :user_class
+
+    def initialize(request)
       @request = request
-      @user_class = user_class
     end
-    attr_reader :request, :user_class
+    attr_reader :request
 
     def auth
       request.env["omniauth.auth"]

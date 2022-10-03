@@ -10,7 +10,13 @@ module CurrentSession
     attribute :current_user
 
     class << self
-      attr_accessor :user_class, :session_token_class
+      attr_accessor :session_token_class
+      attr_reader :user_class
+
+      def user_class=(user_class)
+        @user_class = user_class
+        @auth_class.user_class = user_class if @auth_class
+      end
 
       def current_time(_)
         Time.current
@@ -24,8 +30,9 @@ module CurrentSession
         if block
           session_methods = Module.new(&block)
           @session_repository_class = Class.new(CurrentSession::Repository) { include session_methods }
+          @session_methods = session_methods
         else
-          @session_repository_class
+          @session_methods
         end
       end
 
@@ -37,8 +44,10 @@ module CurrentSession
         if block
           auth_methods = Module.new(&block)
           @auth_class = Class.new(CurrentSession::Auth) { include auth_methods }
+          @auth_class.user_class = user_class
+          @auth_methods = auth_methods
         else
-          @auth_class
+          @auth_methods
         end
       end
     end
