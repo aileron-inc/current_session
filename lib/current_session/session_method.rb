@@ -4,7 +4,11 @@ module CurrentSession
   #
   # Base class for processing to get session_token from request.session
   #
-  class Repository
+  class SessionMethod
+    def self.new_session_class(session_methods)
+      Class.new(CurrentSession::SessionMethod) { include session_methods }
+    end
+
     def initialize(current_time:, request:, user_class:, session_token_class:)
       @current_time = current_time
       @request = request

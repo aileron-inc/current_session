@@ -10,9 +10,8 @@ module CurrentSession
   extend ActiveSupport::Autoload
   autoload :Base
   autoload :Interface
-  autoload :Auth
-  autoload :Repository
-  autoload :RaiseNotImplementedError
+  autoload :AuthMethod
+  autoload :SessionMethod
   autoload :SessionMethods
 
   def self.key(user_class)

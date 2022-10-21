@@ -20,7 +20,7 @@ module CurrentSession
 
       def create(request)
         auth = @auth_class.new(request)
-        auth.find_or_create_by_auth.try do |user|
+        auth.call do |user|
           auth.update(user)
           session_repository(request).update_session_token(user)
         end
@@ -37,7 +37,7 @@ module CurrentSession
       private
 
       def session_repository(request)
-        @session_repository_class.new(
+        @session_class.new(
           request: request,
           user_class: user_class,
           session_token_class: session_token_class,

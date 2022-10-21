@@ -32,3 +32,6 @@ Lint/EmptyBlock:
 
 RSpec/MultipleExpectations:
   Enabled: false
+
+Style/SignalException:
+  EnforcedStyle: semantic
