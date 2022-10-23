@@ -11,7 +11,7 @@ module CurrentSession
         Module.new do
           define_method(:current_user) { user_class.find(current_user_id) }
 
-          def try
+          def try_session_token
             yield self
           end
 

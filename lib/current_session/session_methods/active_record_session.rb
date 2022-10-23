@@ -16,8 +16,15 @@ module CurrentSession
       def create(user)
         session_token_class.create(user_id: user.id, value: new_session_token) do |record|
           update(record)
-        end.value
+          yield record.value
+        end
       end
+
+      def destroy
+        session_token_class.find_by(value: session_token)&.destroy
+      end
+
+      private
 
       def update(token)
         token.update(
@@ -25,10 +32,6 @@ module CurrentSession
           last_request_ip: request.remote_ip,
           last_request_user_agent: request.user_agent
         )
-      end
-
-      def destroy
-        session_token_class.find_by(value: session_token)&.destroy
       end
     end
   end

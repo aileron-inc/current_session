@@ -12,9 +12,7 @@ module CurrentSession
       end
 
       def update(request)
-        session_repository(request).try do |repository|
-          repository.find { |user| self.current_user = user }
-        end
+        session_repository(request).find_by_token { |user| self.current_user = user }
         self
       end
 
@@ -28,10 +26,7 @@ module CurrentSession
 
       def destroy(request)
         self.current_user = nil
-        session_repository(request).try do |repository|
-          repository.destroy
-          repository.delete_session_token
-        end
+        session_repository(request).delete_session_token
       end
 
       private

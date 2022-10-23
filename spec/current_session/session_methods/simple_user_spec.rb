@@ -74,7 +74,7 @@ RSpec.describe "CurrentSession::SessionMethods::SimpleUser" do
             last_request_ip: request.remote_ip,
             last_request_user_agent: request.user_agent
           )
-          user.session_token
+          yield user.session_token
         end
 
         def destroy
@@ -103,7 +103,7 @@ RSpec.describe "CurrentSession::SessionMethods::SimpleUser" do
 
   describe "#create" do
     let(:request) do
-      OpenStruct.new(
+      MockHttpRequest.new(
         env: { "omniauth.auth" => omniauth_auth },
         session: {},
         remote_ip: "127.0.0.1",
@@ -123,7 +123,7 @@ RSpec.describe "CurrentSession::SessionMethods::SimpleUser" do
     let(:current_session_token) { "testtest" }
     let!(:current_user) { user_class.create(uid: uid, name: "test", session_token: current_session_token) }
     let!(:request) do
-      OpenStruct.new(
+      MockHttpRequest.new(
         session: { session_key => current_session_token },
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent"
@@ -140,7 +140,7 @@ RSpec.describe "CurrentSession::SessionMethods::SimpleUser" do
     let(:current_session_token) { "destroy-test" }
     let!(:current_user) { user_class.create(uid: uid, name: "test", session_token: current_session_token) }
     let!(:request) do
-      OpenStruct.new(
+      MockHttpRequest.new(
         session: { session_key => current_session_token },
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent"

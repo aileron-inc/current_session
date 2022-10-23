@@ -11,7 +11,7 @@ module CurrentSession
       end
 
       def create(user)
-        user.uid
+        yield user.uid
       end
 
       def destroy

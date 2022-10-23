@@ -7,12 +7,14 @@ module CurrentSession
   class AuthMethod
     class_attribute :user_class
 
+    # only exist users
     class FindBy < self
       def call(&block)
         find_by_auth.try(&block)
       end
     end
 
+    # admit new users
     class FindOrCreateBy < self
       def call(&block)
         find_or_create_by_auth.try(&block)

@@ -50,7 +50,7 @@ RSpec.describe CurrentSession::SessionMethods::EnvSession do
   describe "#update" do
     let!(:current_user) { user_class.create(uid: "test", name: "test") }
     let(:request) do
-      OpenStruct.new(
+      MockHttpRequest.new(
         remote_ip: "127.0.0.1",
         user_agent: "test user-agent",
         session: {}
