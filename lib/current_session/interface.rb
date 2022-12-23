@@ -12,32 +12,18 @@ module CurrentSession
       end
 
       def update(request)
-        session_repository(request).find_by_token { |user| self.current_user = user }
+        self.current_user = @session_methods.new(request).find
         self
       end
 
       def create(request)
-        auth = @auth_class.new(request)
-        auth.call do |user|
-          auth.update(user)
-          session_repository(request).update_session_token(user)
-        end
+        self.current_user = @auth_methods.new(request).connect
+        @session_methods.new(request).create(current_user)
+        self
       end
 
       def destroy(request)
-        self.current_user = nil
-        session_repository(request).delete_session_token
-      end
-
-      private
-
-      def session_repository(request)
-        @session_class.new(
-          request: request,
-          user_class: user_class,
-          session_token_class: session_token_class,
-          current_time: current_time(request)
-        )
+        @session_methods.new(request).destroy
       end
     end
   end

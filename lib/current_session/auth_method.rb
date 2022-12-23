@@ -2,36 +2,11 @@
 
 module CurrentSession
   #
-  # Base class for providing auth methods
+  # auth method
   #
   class AuthMethod
-    class_attribute :user_class
-
-    # only exist users
-    class FindBy < self
-      def call(&block)
-        find_by_auth.try(&block)
-      end
-    end
-
-    # admit new users
-    class FindOrCreateBy < self
-      def call(&block)
-        find_or_create_by_auth.try(&block)
-      end
-    end
-
-    def self.new_auth_class(auth_methods_module)
-      new_auth_class =
-        if auth_methods_module.method_defined?(:find_by_auth)
-          Class.new(CurrentSession::AuthMethod::FindBy) { include auth_methods_module }
-        elsif auth_methods_module.method_defined?(:find_or_create_by_auth)
-          Class.new(CurrentSession::AuthMethod::FindOrCreateBy) { include auth_methods_module }
-        else
-          fail NotImplementedError, "You must implement find_by_auth or find_or_create_by_auth"
-        end
-      new_auth_class.user_class = user_class
-      new_auth_class
+    def self.new_class(methods)
+      Class.new(self) { include methods }
     end
 
     def initialize(request)
@@ -41,6 +16,13 @@ module CurrentSession
 
     def auth
       request.env["omniauth.auth"]
+    end
+
+    #
+    # @return User
+    #
+    def connect
+      fail NotImplementedError, "You must implement #{self.class}##{__method__}"
     end
   end
 end

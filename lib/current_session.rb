@@ -9,12 +9,12 @@ require "active_support"
 module CurrentSession
   extend ActiveSupport::Autoload
   autoload :Base
+  autoload :Dsl
   autoload :Interface
   autoload :AuthMethod
   autoload :SessionMethod
-  autoload :SessionMethods
 
-  def self.key(user_class)
-    "session_#{user_class.name.underscore.parameterize(separator: "_")}_key"
+  def self.key(namespace)
+    "session_#{namespace.name.underscore.parameterize(separator: "_")}_key"
   end
 end
