@@ -19,7 +19,6 @@ module CurrentSession
       def create(request)
         self.current_user = @auth_methods.new(request).connect
         @session_methods.new(request).create(current_user)
-        self
       end
 
       def destroy(request)
